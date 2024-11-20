@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="admin-dashboard-container">
+        <h2>Admin Dashboard</h2>
+        <h3>Pending Bookings</h3>
+        <div id="pending-bookings">
+        </div>
+
+        <button id="logout-btn">Logout</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+    <script>
+        const auth = getAuth();
+        const db = getDatabase();
+
+        const adminId = auth.currentUser.uid;
+
+        const bookingsRef = ref(db, 'users/');
+        get(bookingsRef).then((snapshot) => {
+            if (snapshot.exists()) {
+                const users = snapshot.val();
+                let pendingBookingsHtml = '';
+                for (let userId in users) {
+                    if (users[userId].role === 'user' && users[userId].bookings) {
+                        for (let bookingId in users[userId].bookings) {
+                            const booking = users[userId].bookings[bookingId];
+                            if (booking.status === 'Pending') {
+                                pendingBookingsHtml += `
+                                    <div>
+                                        <p>User: ${users[userId].name}</p>
+                                        <p>Booking Date: ${booking.date}</p>
+                                        <p>Amount: ${booking.amount}</p>
+                                        <button onclick="approveBooking('${userId}', '${bookingId}')">Approve</button>
+                                        <button onclick="denyBooking('${userId}', '${bookingId}')">Deny</button>
+                                    </div>
+                                `;
+                            }
+                        }
+                    }
+                }
+                document.getElementById('pending-bookings').innerHTML = pendingBookingsHtml;
+            }
+        });
+
+        function approveBooking(userId, bookingId) {
+            const bookingRef = ref(db, 'users/' + userId + '/bookings/' + bookingId);
+            update(bookingRef, { status: 'Approved' })
+                .then(() => {
+                    alert('Booking Approved!');
+                    location.reload();
+                })
+                .catch((error) => {
+                    alert('Error: ' + error.message);
+                });
+        }
+
+        function denyBooking(userId, bookingId) {
+            const bookingRef = ref(db, 'users/' + userId + '/bookings/' + bookingId);
+            update(bookingRef, { status: 'Denied' })
+                .then(() => {
+                    alert('Booking Denied!');
+                    location.reload();
+                })
+                .catch((error) => {
+                    alert('Error: ' + error.message);
+                });
+        }
+
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                alert(error.message);
+            });
+        });
+    </script>
+</body>
+
+</html>

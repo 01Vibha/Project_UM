@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <h2>Welcome, <span id="user-name"></span></h2>
+        <div>
+            <h3>Request a New Cylinder</h3>
+            <form id="booking-form">
+                <button type="submit">Book Cylinder</button>
+            </form>
+        </div>
+
+        <h3>Your Booking History</h3>
+        <div id="booking-history">
+        </div>
+
+        <button id="logout-btn">Logout</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+    <script>
+        const auth = getAuth();
+        const db = getDatabase();
+        const userId = auth.currentUser.uid;
+
+        get(ref(db, 'users/' + userId)).then((snapshot) => {
+            if (snapshot.exists()) {
+                document.getElementById('user-name').innerText = snapshot.val().name;
+                const bookingsRef = ref(db, 'users/' + userId + '/bookings');
+                get(bookingsRef).then((bookingSnapshot) => {
+                    let bookingHtml = '';
+                    bookingSnapshot.forEach((booking) => {
+                        bookingHtml += `
+                            <div>
+                                <p>Booking ID: ${booking.key}</p>
+                                <p>Status: ${booking.val().status}</p>
+                            </div>
+                        `;
+                    });
+                    document.getElementById('booking-history').innerHTML = bookingHtml;
+                });
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                alert(error.message);
+            });
+        });
+    </script>
+</body>
+
+</html>
