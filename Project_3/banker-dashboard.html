@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banker Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Welcome, Banker</h2>
+        <form id="post-loan-form">
+            <label for="loan-details">Post Loan Details:</label>
+            <textarea id="loan-details" required></textarea>
+            <button type="submit">Post Loan</button>
+        </form>
+        <div id="loan-details-list">
+            <h3>Posted Loans</h3>
+            <ul id="loans-list"></ul>
+        </div>
+    </div>
+    <script type="module" src="banker-dashboard.js"></script>
+</body>
+
+</html>

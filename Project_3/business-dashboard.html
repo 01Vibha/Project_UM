@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Welcome, Business User</h2>
+        <form id="post-idea-form">
+            <label for="idea">Post Your Business Idea:</label>
+            <textarea id="idea" required></textarea>
+            <button type="submit">Post Idea</button>
+        </form>
+        <div id="posted-ideas">
+            <h3>Your Posted Ideas</h3>
+            <ul id="ideas-list"></ul>
+        </div>
+    </div>
+    <script type="module" src="business-dashboard.js"></script>
+</body>
+
+</html>
